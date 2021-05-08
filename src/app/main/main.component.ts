@@ -40,11 +40,16 @@ export class MainComponent implements OnInit {
       2]);
 
     const options = {
-      title: 'Density of Precious Metals, in g/cm^3',
+      title: 'Equipment amount Vs Equipment type',
       width: 600,
       height: 400,
       bar: {groupWidth: '50%'},
       legend: {position: 'none'},
+      titleTextStyle: { color: 'green',
+        // fontName: <string>,
+        fontSize: 20,
+        bold: true,
+       }
     };
 
     const chart = new google.visualization.ColumnChart(document.getElementById('column-chart'));
