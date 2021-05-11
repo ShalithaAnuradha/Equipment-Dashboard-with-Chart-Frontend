@@ -26,5 +26,8 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.16"
   }
 }

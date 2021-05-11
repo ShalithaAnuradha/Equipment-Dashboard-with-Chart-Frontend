@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {get} from 'scriptjs';
-
-declare var google: any;
+import {Component, Input, OnInit} from '@angular/core';
+import {EquipmentService} from '../service/equipment.service';
+import {Equipment} from '../model/equipment';
+import {ChartComponent} from '../chart/chart.component';
 
 @Component({
   selector: 'app-main',
@@ -9,53 +9,17 @@ declare var google: any;
   styleUrls: ['./main.component.scss']
 })
 export class MainComponent implements OnInit {
+  operational: any;
+  nonOperational: any;
 
-
-  constructor() {
+  constructor(public equipmentService: EquipmentService) {
+    setTimeout(() => {
+      this.operational = this.equipmentService.operational;
+      this.nonOperational = this.equipmentService.nonOperational;
+    }, 100);
   }
 
   ngOnInit(): void {
-    console.log(google);
-    google.charts.load('current', {packages: ['corechart']});
-    google.charts.setOnLoadCallback(this.drawChart);
+
   }
-
-  drawChart(): void{
-    const data = google.visualization.arrayToDataTable([
-      ['Element', 'Density', {role: 'style'}],
-      ['Copper', 8.94, 'dodgerblue'],
-      ['Silver', 10.49, 'dodgerblue'],
-      ['Gold', 19.30, 'dodgerblue'],
-      ['Platinum', 21.45, 'color: dodgerblue'],
-    ]);
-
-    const view = new google.visualization.DataView(data);
-    view.setColumns([0, 1,
-      {
-        calc: 'stringify',
-        sourceColumn: 1,
-        type: 'string',
-        role: 'annotation'
-      },
-      2]);
-
-    const options = {
-      title: 'Equipment amount Vs Equipment type',
-      width: 600,
-      height: 400,
-      bar: {groupWidth: '50%'},
-      legend: {position: 'none'},
-      titleTextStyle: { color: 'green',
-        // fontName: <string>,
-        fontSize: 20,
-        bold: true,
-       }
-    };
-
-    const chart = new google.visualization.ColumnChart(document.getElementById('column-chart'));
-    chart.draw(view, options);
-  }
-
-
 }
-
