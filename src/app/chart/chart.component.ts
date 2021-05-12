@@ -1,6 +1,6 @@
-import {Component, Injectable, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Injectable, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {EquipmentService} from '../service/equipment.service';
-import {Chart} from "../model/chart";
+import {Chart} from '../model/chart';
 
 @Component({
   selector: 'app-chart',
@@ -8,20 +8,28 @@ import {Chart} from "../model/chart";
   styleUrls: ['./chart.component.scss']
 })
 
-export class ChartComponent implements OnInit {
+export class ChartComponent implements OnInit, OnChanges {
 
-  private chartData: Array<Chart> =  [];
+  private chartData: Array<Chart> = [];
 
-  constructor(public equipmentService: EquipmentService) { }
+  constructor(public equipmentService: EquipmentService) {
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+
+    }
 
   ngOnInit(): void {
+    this.displayChart();
+  }
 
+  displayChart(): void {
     this.equipmentService.getAllEquipments().subscribe(list => {
       this.equipmentService.equipmentList = list;
       console.log(list.length);
       let noOfOperationalEquipments = 0;
       const equipmentTypes = [...new Set(list.map(equipment => equipment.AssetCategoryID))];
-      let noOfEquipmentForEachType: Array<number> = Array(equipmentTypes.length).fill(0);
+      const noOfEquipmentForEachType: Array<number> = Array(equipmentTypes.length).fill(0);
       for (const equipment of list) {
         if (equipment.OperationalStatus === 'Operational'){
           noOfOperationalEquipments++;
@@ -31,16 +39,12 @@ export class ChartComponent implements OnInit {
         const existingValue = noOfEquipmentForEachType[index];
         noOfEquipmentForEachType.splice(index, 1,  existingValue + 1);
       }
-      console.log(noOfEquipmentForEachType);
-      console.log(equipmentTypes);
+
       for (let i = 0; i < equipmentTypes.length; i++) {
         this.chartData.push(new Chart(equipmentTypes[i], noOfEquipmentForEachType[i]));
       }
 
-      console.log(this.chartData);
-
       setTimeout(() => {
-        console.log('Hii');
         this.equipmentService.operational = noOfOperationalEquipments;
         this.equipmentService.nonOperational = list.length - noOfOperationalEquipments;
 
@@ -79,7 +83,7 @@ export class ChartComponent implements OnInit {
 
       }, 50);
     });
-
   }
+
 
 }

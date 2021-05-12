@@ -10,7 +10,7 @@ export class EquipmentService {
   equipmentList: Array<Equipment> = [];
   operational = 0;
   nonOperational = 0;
-  max = 30;
+  max = 50;
   last = 0;
 
   constructor(private httpClient: HttpClient) {
