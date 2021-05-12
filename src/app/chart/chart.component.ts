@@ -57,8 +57,8 @@ export class ChartComponent implements OnInit {
           dataSource: {
             // Chart Configuration
             "chart": {
-              "caption": "Countries With Most Oil Reserves [2017-18]",
-              "subCaption": "In MMbbl = One Million barrels",
+              "caption": "No of Equipments Vs Equipment Type",
+              "subCaption": "For 50 equipments",
               "xAxisName": "Equipment Type",
               "yAxisName": "No of Equipments",
               "numberSuffix": "",   //"K -> 200K, 300K"

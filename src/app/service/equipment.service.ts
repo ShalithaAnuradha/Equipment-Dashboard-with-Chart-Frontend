@@ -10,12 +10,14 @@ export class EquipmentService {
   equipmentList: Array<Equipment> = [];
   operational = 0;
   nonOperational = 0;
+  max = 30;
+  last = 0;
 
   constructor(private httpClient: HttpClient) {
   }
 
   getAllEquipments(): Observable<Array<Equipment>> {
-    return this.httpClient.get<Array<Equipment>>('http://localhost:8080/api/v1/customers');
+    return this.httpClient.get<Array<Equipment>>(`http://localhost:8080/api/v1/customers?max=${this.max}&limit=${this.last}`);
   }
 
 }

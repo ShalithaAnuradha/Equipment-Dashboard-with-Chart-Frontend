@@ -6,13 +6,15 @@ import { MainComponent } from './main/main.component';
 import { HttpClientModule } from '@angular/common/http';
 import {EquipmentService} from './service/equipment.service';
 import { ChartComponent } from './chart/chart.component';
+import { PaginationComponent } from './pagination/pagination.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     MainComponent,
-    ChartComponent
+    ChartComponent,
+    PaginationComponent
   ],
   imports: [
     BrowserModule,
