@@ -1,2 +1,11 @@
 <div id="chart-container">FusionCharts XT will load here!</div>
+<div>
+
+  <button id="previous" type="button" (click)="previous()" [disabled]="previousDisabled" [style.color]="previousColor">
+    Previous 50 Equipments
+  </button>
+
+  <button id="next" type="button" (click)="next()" [disabled]="nextDisabled">Next 50 Equipments</button>
+
+</div>
 

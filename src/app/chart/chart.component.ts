@@ -1,6 +1,17 @@
-import {Component, EventEmitter, Injectable, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  DoCheck,
+  EventEmitter,
+  Injectable,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {EquipmentService} from '../service/equipment.service';
 import {Chart} from '../model/chart';
+
 
 @Component({
   selector: 'app-chart',
@@ -8,23 +19,26 @@ import {Chart} from '../model/chart';
   styleUrls: ['./chart.component.scss']
 })
 
-export class ChartComponent implements OnInit, OnChanges {
+export class ChartComponent implements OnInit{
 
   private chartData: Array<Chart> = [];
+  previousDisabled = true;
+  nextDisabled = false;
+  previousColor = 'grey';
+  nextColor = 'dodgerblue';
 
   constructor(public equipmentService: EquipmentService) {
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-
-    }
-
   ngOnInit(): void {
-    this.displayChart();
+    console.log("Start");
+    this.displayChart( 50, 0);
   }
 
-  displayChart(): void {
-    this.equipmentService.getAllEquipments().subscribe(list => {
+
+
+  displayChart(max: number, last: number): void {
+    this.equipmentService.getAllEquipments(max, last).subscribe(list => {
       this.equipmentService.equipmentList = list;
       console.log(list.length);
       let noOfOperationalEquipments = 0;
@@ -83,6 +97,52 @@ export class ChartComponent implements OnInit, OnChanges {
 
       }, 50);
     });
+  }
+
+
+
+
+
+  next(): void {
+    this.equipmentService.max += 50;
+    this.equipmentService.last += 50;
+    if (this.equipmentService.max > 50){
+      this.previousDisabled = false;
+    }
+    if (this.equipmentService.max >= 300){
+      // alert('You have come to the end of the data');
+      this.nextDisabled = true;
+    }
+    this.buttonColor();
+    console.log( this.equipmentService.max, this.equipmentService.last);
+    this.displayChart(this.equipmentService.max, this.equipmentService.last);
+  }
+
+  previous(): void {
+    this.equipmentService.max -= 50;
+    this.equipmentService.last -= 50;
+    if (this.equipmentService.max <= 50){
+      this.previousDisabled = true;
+    }
+    if (this.equipmentService.max < 300){
+      this.nextDisabled = false;
+    }
+    this.buttonColor();
+    console.log( this.equipmentService.max, this.equipmentService.last);
+
+  }
+
+  buttonColor(): void {
+    if (this.previousDisabled){
+      this.previousColor = 'grey';
+    }else{
+      this.previousColor = 'dodgerblue';
+    }
+    if (this.nextDisabled){
+      this.nextColor = 'grey';
+    }else{
+      this.nextColor = 'dodgerblue';
+    }
   }
 
 

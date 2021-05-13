@@ -1,9 +1,7 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {EquipmentService} from '../service/equipment.service';
-import {ChartComponent} from '../chart/chart.component';
 
 @Component({
-  providers: [ChartComponent],
   selector: 'app-pagination',
   templateUrl: './pagination.component.html',
   styleUrls: ['./pagination.component.scss']
@@ -15,9 +13,8 @@ export class PaginationComponent implements OnInit {
   previousColor = 'grey';
   nextColor = 'dodgerblue';
 
-  @Output() chartEvent = new EventEmitter();
 
-  constructor(public equipmentService: EquipmentService, public chart: ChartComponent) { }
+  constructor(public equipmentService: EquipmentService) { }
 
   ngOnInit(): void {
   }
@@ -34,9 +31,6 @@ export class PaginationComponent implements OnInit {
     }
     this.buttonColor();
     console.log( this.equipmentService.max, this.equipmentService.last);
-
-    this.chart.ngOnInit();
-
   }
 
   previous(): void {
@@ -50,6 +44,7 @@ export class PaginationComponent implements OnInit {
     }
     this.buttonColor();
     console.log( this.equipmentService.max, this.equipmentService.last);
+
   }
 
   buttonColor(): void {

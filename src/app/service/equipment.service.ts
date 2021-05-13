@@ -16,8 +16,8 @@ export class EquipmentService {
   constructor(private httpClient: HttpClient) {
   }
 
-  getAllEquipments(): Observable<Array<Equipment>> {
-    return this.httpClient.get<Array<Equipment>>(`http://localhost:8080/api/v1/customers?max=${this.max}&limit=${this.last}`);
+  getAllEquipments(maxValue: number, lastValue: number): Observable<Array<Equipment>> {
+    return this.httpClient.get<Array<Equipment>>(`http://localhost:8080/api/v1/customers?max=${maxValue}&limit=${lastValue}`);
   }
 
 }

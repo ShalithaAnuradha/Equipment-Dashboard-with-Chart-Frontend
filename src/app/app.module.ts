@@ -7,6 +7,7 @@ import { HttpClientModule } from '@angular/common/http';
 import {EquipmentService} from './service/equipment.service';
 import { ChartComponent } from './chart/chart.component';
 import { PaginationComponent } from './pagination/pagination.component';
+import {AppRoutingModule} from './app-routing.module';
 
 
 @NgModule({
@@ -19,7 +20,7 @@ import { PaginationComponent } from './pagination/pagination.component';
   imports: [
     BrowserModule,
     HttpClientModule,
-
+    AppRoutingModule
   ],
   providers: [EquipmentService],
   bootstrap: [AppComponent]
