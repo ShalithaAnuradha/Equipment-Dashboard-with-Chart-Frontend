@@ -3,10 +3,33 @@ button{
 }
 
 div{
-  position: absolute;
-  right: 0;
+  //position: absolute;
+  //right: 0;
 }
 
-#next{
+#next,#previous{
+  //color: dodgerblue;
+}
+
+.operationl{
+  margin: 20px;
+  margin-bottom: 40px;
+}
+
+.operational div{
   color: dodgerblue;
+}
+
+#operational,#non-operational{
+  font-size: 60px;
+}
+
+#graph{
+  margin-left: 20px;
+}
+
+#column-chart{
+  //transform: translateX(-70px);
+  width: 600px;
+  height: 300px;
 }

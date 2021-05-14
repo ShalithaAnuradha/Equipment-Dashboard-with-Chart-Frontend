@@ -16,7 +16,7 @@ export class MainComponent implements OnInit {
     setTimeout(() => {
       this.operational = this.equipmentService.operational;
       this.nonOperational = this.equipmentService.nonOperational;
-    }, 100);
+    }, 1000);
   }
 
   ngOnInit(): void {
