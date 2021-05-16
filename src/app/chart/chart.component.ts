@@ -1,13 +1,6 @@
 import {
   Component,
-  DoCheck,
-  EventEmitter,
-  Injectable,
-  Input,
-  OnChanges,
   OnInit,
-  Output,
-  SimpleChanges
 } from '@angular/core';
 import {EquipmentService} from '../service/equipment.service';
 import {Chart} from '../model/chart';
@@ -24,67 +17,94 @@ export class ChartComponent implements OnInit {
   private chartData: Array<Chart> = [];
   previousDisabled = true;
   nextDisabled = false;
-  previousColor = 'black';
-  nextColor = 'black';
+  previousColor = 'dodgerblue';
+  nextColor = 'grey';
   operational: any;
   nonOperational: any;
   wholeList: any;
-  goForward = true;
+  lastRowId = 0;
 
   constructor(public equipmentService: EquipmentService) {
   }
 
   ngOnInit(): void {
-
-    /*For all the data in one graph*/
+    /*When required to show all the data in one graph*/
     // this.equipmentService.getAllEquipments(350, 0).subscribe(wholeList => {this.wholeList = wholeList; });
 
+    // When page rendering first time, display the chart with data set of max = 50 and last = 0
     this.displayChart(50, 0, true);
 
   }
 
-
+  // Get data from the equipment service and apply them as chart data.
   displayChart(max: number, last: number, goForward: boolean): void {
+    // get the data set of equipments as a Observable.
     this.equipmentService.getAllEquipments(max, last).subscribe(list => {
       this.equipmentService.equipmentList = list;
-      const lastRowId = parseInt(list[list.length - 1].__rowid__, 10);
 
-      // console.log( 'Length of the equipmentList: ' + list.length);
-      console.log('Last __rowid__ value = ' + lastRowId);
-      if(lastRowId === 298){
-          this.nextDisabled = true;
+      // Get the row id of the last object to the variable of lastRowId
+      this.lastRowId = parseInt(list[list.length - 1].__rowid__, 10);
+
+      // Change the button status and color for turning points.
+      if (this.lastRowId === 298) {
+        this.nextDisabled = true;
+        this.nextColor = 'grey';
       }
-      if (goForward) {
-        this.equipmentService.last = lastRowId;
+      if (this.lastRowId === 50) {
+        this.previousDisabled = true;
+        this.previousColor = 'grey';
+        this.nextColor = 'dodgerblue';
       }
+
+      // Change the last value for the next get request to the last row id of this request.
+      this.equipmentService.last = this.lastRowId;
 
       let noOfOperationalEquipments = 0;
+
+      // Create a unique list for equipment types.
       const equipmentTypes = [...new Set(list.map(equipment => equipment.AssetCategoryID))];
+
+      // Create a list for no of equipment of each type having same length of equipment types and filled with zeros.
       const noOfEquipmentForEachType: Array<number> = Array(equipmentTypes.length).fill(0);
+
+      // Count the no of operational equipments
       for (const equipment of list) {
         if (equipment.OperationalStatus === 'Operational') {
           noOfOperationalEquipments++;
         }
-        // console.log(equipment.AssetCategoryID);
+
+        // Get the index for each equipment in equipmentTypes list according to equipment type(AssetCategoryID).
         const index = equipmentTypes.indexOf(equipment.AssetCategoryID);
+
+        // Get the existing value in no noOfEquipmentForEachType list for this index
         const existingValue = noOfEquipmentForEachType[index];
+
+        // Increase that existing value by 1 by replacing existing value.
         noOfEquipmentForEachType.splice(index, 1, existingValue + 1);
       }
 
-
+      // Empty the chart for every method call to remove the previous data of the chart.
       this.chartData = [];
+
+      // Add new data to the chart
       for (let i = 0; i < equipmentTypes.length; i++) {
         this.chartData.push(new Chart(equipmentTypes[i], noOfEquipmentForEachType[i]));
       }
 
+      // Update the Operational and Non-Operational status of the each 50 equipment for each method call
       this.operational = noOfOperationalEquipments;
       this.nonOperational = list.length - noOfOperationalEquipments;
+
+      // Render the Chart to display on the web page
       this.chartRender();
 
+    }, err => {
+      console.log('ERROR: ' + err.message);
     });
   }
 
-  chartRender(): void{
+  // Render the chart into the web page.
+  chartRender(): void {
     const chartData = this.chartData;
 
     // STEP 3 - Chart Configurations
@@ -118,45 +138,70 @@ export class ChartComponent implements OnInit {
     });
   }
 
+  // Show next data set (next 50 equipment) in the graph
   next(): void {
-    this.equipmentService.max += 50;
     this.nextDisabled = true;
-    // console.log( 'max: ' + this.equipmentService.max,  'last-previousValue: ' +  this.equipmentService.last);
-    const last = this.equipmentService.last;
+
+    // Display the chart [1]
     this.displayChart(this.equipmentService.noOfElements, this.equipmentService.last, true);
-    console.log(this.nextDisabled);
+
+    // Sometimes backend took a little bit of time to receive the data and then [1] Display chart won't work properly.
+    // So that method was called again if there is some issue again after 500ms and within that time the button status
+    // is change to disabled. You can change this time duration with respect to your machine's performance and other factors.
     setTimeout(() => {
       this.displayChart(this.equipmentService.noOfElements, this.equipmentService.last, true);
       this.nextDisabled = false;
+      this.buttonColor();
     }, 500);
-    console.log(this.nextDisabled);
-    if (this.equipmentService.max >= 50) {
+
+    // Change the button status according to current row id of the last object.
+    if (this.lastRowId > 50) {
       this.previousDisabled = false;
+      this.nextColor = 'dodgerblue';
     }
-    if (this.equipmentService.max >= 250) {
+    if (this.lastRowId > 250) {
       this.nextDisabled = true;
     }
-    console.log('max:' + this.equipmentService.max);
     this.buttonColor();
     this.chartRender();
   }
 
-
+  // Show previous data set (previous 50 equipment) in the graph
   previous(): void {
-    this.equipmentService.max -= 50;
-    if (this.equipmentService.max <= 50) {
+
+    // Reduce the last value for the next get request according to the last row id
+    // Even though here 298 is directly used, it could be done sending a get request to get whole data once and find that
+    // number by dynamically.
+    if (this.lastRowId === 298) {
+      this.equipmentService.last -= 98;
+    } else {
+      this.equipmentService.last -= 100;
+    }
+
+    // Display the chart [2]
+    this.displayChart(this.equipmentService.noOfElements, this.equipmentService.last, false);
+
+    // Sometimes backend took a little bit of time to receive the data and then [2] Display chart won't work properly.
+    // So that method was called again if there is some issue again after 1000ms and within that time the button status
+    // is change to disabled.
+    setTimeout(() => {
+      this.displayChart(this.equipmentService.noOfElements, this.equipmentService.last, false);
+      this.nextDisabled = false;
+      this.buttonColor();
+    }, 1000);
+
+    // Change the button status according to current row id of the last object.
+    if (this.lastRowId <= 50) {
       this.previousDisabled = true;
     }
-    if (this.equipmentService.max < 300) {
+    if (this.lastRowId < 298) {
       this.nextDisabled = false;
     }
-    console.log(this.equipmentService.max, this.equipmentService.last);
-    this.equipmentService.last -= 50;
-    this.displayChart(this.equipmentService.noOfElements, this.equipmentService.last, false);
     this.buttonColor();
-
+    this.chartRender();
   }
 
+  // Change the button color according to its disabled status
   buttonColor(): void {
     if (this.previousDisabled) {
       this.previousColor = 'grey';

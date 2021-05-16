@@ -17,7 +17,6 @@ export class EquipmentService {
   }
 
   getAllEquipments(maxVal: number, lastVal: number): Observable<Array<Equipment>> {
-    console.log(lastVal);
     return this.httpClient.get<Array<Equipment>>(`http://localhost:8080/api/v1/equipments?max=${maxVal}&last=${lastVal}`);
   }
 

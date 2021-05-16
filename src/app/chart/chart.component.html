@@ -1,3 +1,4 @@
+<!--This script is used to provide the chart features to the project-->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <div class="row operational">
   <div class="col-4" style="background-color: yellow">Operational
@@ -8,18 +9,15 @@
   </div>
 </div>
 
-
 <div id="chart-container">FusionCharts XT will load here!</div>
 
-
-
-<div>
-
-  <button id="previous" type="button" (click)="previous()" [disabled]="previousDisabled" [style.color]="previousColor">
-    Previous 50 Equipments
-  </button>
-
-  <button id="next" type="button" (click)="next()" [disabled]="nextDisabled">Next 50 Equipments</button>
-
+<div class="row">
+  <div class="col-4"></div>
+  <div class="col-8">
+    <button id="previous" type="button" (click)="previous()" [disabled]="previousDisabled" [style.color]="previousColor">
+      Previous 50 Equipments
+    </button>
+    <button id="next" type="button" (click)="next()" [disabled]="nextDisabled" [style.color]="nextColor">Next 50 Equipments</button>
+  </div>
 </div>
 
