@@ -17,8 +17,7 @@ app.get('/api/v1/equipments', (request, response, next) => {
   // This is CORS-enabled for all origins
   const req = http.get(`http://ivivaanywhere.ivivacloud.com/api/Asset/Asset/All?apikey=SC:demo:64a9aa122143a5db&max=${max}&last=${last}`, (res) => {
     console.log('STATUS: ' + res.statusCode);
-    console.log('HEADERS: ' + JSON.stringify(res.headers));
-    console.log('\n');
+    JSON.stringify(res.headers);
     // Buffer the body entirely for processing as a whole.
     const bodyChunks = [];
     res.on('data', (chunk) => {
