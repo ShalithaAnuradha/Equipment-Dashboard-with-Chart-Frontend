@@ -1,7 +1,4 @@
-import {
-  Component,
-  OnInit,
-} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {EquipmentService} from '../service/equipment.service';
 import {Chart} from '../model/chart';
 
@@ -16,52 +13,24 @@ export class ChartComponent implements OnInit {
 
   private chartData: Array<Chart> = [];
   previousDisabled = true;
-  nextDisabled = false;
-  previousColor = 'dodgerblue';
-  nextColor = 'grey';
   operational: any;
   nonOperational: any;
-  wholeList: any;
-  lastRowId = 0;
   last = 0;
 
   constructor(public equipmentService: EquipmentService) {
   }
 
   ngOnInit(): void {
-    /*When required to show all the data in one graph*/
-    // this.equipmentService.getAllEquipments(350, 0).subscribe(wholeList => {this.wholeList = wholeList; });
-
     // When page rendering first time, display the chart with data set of max = 50 and last = 0
-    this.displayChart(50, 0, true);
-    setTimeout(() => {
-      this.chartRender();
-    }, 200);
-
+    this.displayChart(300, 0);
   }
 
   // Get data from the equipment service and apply them as chart data.
-  displayChart(max: number, last: number, goForward: boolean): void {
+  displayChart(max: number, last: number): void {
     // get the data set of equipments as a Observable.
     this.equipmentService.getAllEquipments(max, last).subscribe(list => {
+
       this.equipmentService.equipmentList = list;
-
-      // Get the row id of the last object to the variable of lastRowId
-      this.lastRowId = parseInt(list[list.length - 1].__rowid__, 10);
-      console.log(this.lastRowId);
-
-      // Change the button status and color for turning points.
-      if (this.lastRowId === 298) {
-        this.nextDisabled = true;
-        this.nextColor = 'grey';
-      }
-      if (this.lastRowId === 50) {
-        this.nextColor = 'dodgerblue';
-      }
-
-      // Change the last value for the next get request to the last row id of this request.
-      this.equipmentService.last = this.lastRowId;
-
       let noOfOperationalEquipments = 0;
 
       // Create a unique list for equipment types.
@@ -99,7 +68,7 @@ export class ChartComponent implements OnInit {
       this.nonOperational = list.length - noOfOperationalEquipments;
 
       // Render the Chart to display on the web page
-      // this.chartRender();
+      this.chartRender();
 
     }, err => {
       console.log('ERROR: ' + err.message);
@@ -110,7 +79,7 @@ export class ChartComponent implements OnInit {
   chartRender(): void {
     const chartData = this.chartData;
 
-    // STEP 3 - Chart Configurations
+    // Chart Configurations
     const chartConfig = {
       type: 'column2d',
       renderAt: 'chart-container',
@@ -121,7 +90,7 @@ export class ChartComponent implements OnInit {
         // Chart Configuration
         chart: {
           caption: 'No of Equipments Vs Equipment Type',
-          subCaption: 'For 50 equipments',
+          subCaption: 'For All equipments',
           xAxisName: 'Equipment Type',
           yAxisName: 'No of Equipments',
           numberSuffix: '',   // "K -> 200K, 300K"
@@ -140,87 +109,5 @@ export class ChartComponent implements OnInit {
       fusioncharts.render();
     });
   }
-
-  // Show next data set (next 50 equipment) in the graph
-  next(): void {
-    this.nextDisabled = true;
-
-    // Display the chart [1]
-    this.displayChart(this.equipmentService.noOfElements, this.equipmentService.last, true);
-
-    // Sometimes backend took a little bit of time to receive the data and then [1] Display chart won't work properly.
-    // So that method was called again if there is some issue again after 500ms and within that time the button status
-    // is change to disabled. You can change this time duration with respect to your machine's performance and other factors.
-    setTimeout(() => {
-      this.displayChart(this.equipmentService.noOfElements, this.equipmentService.last, true);
-      this.nextDisabled = false;
-      this.buttonColor();
-      this.chartRender();
-    }, 500);
-
-    // Change the button status according to current row id of the last object.
-    if (this.lastRowId > 50) {
-      this.previousDisabled = false;
-      this.nextColor = 'dodgerblue';
-    }
-    if (this.lastRowId > 250) {
-      this.nextDisabled = true;
-    }
-    this.buttonColor();
-    // this.chartRender();
-  }
-
-  // Show previous data set (previous 50 equipment) in the graph
-  previous(): void {
-    this.previousDisabled = true;
-    // Reduce the last value for the next get request according to the last row id
-    // Even though here 298 is directly used, it could be done sending a get request to get whole data once and find that
-    // number by dynamically.
-    if (this.lastRowId === 298 && this.equipmentService.last === 298) {
-      this.equipmentService.last -= 98;
-    } else {
-      this.equipmentService.last -= 100;
-    }
-    this.last = this.equipmentService.last;
-    // Display the chart [2]
-    this.displayChart(this.equipmentService.noOfElements, this.equipmentService.last, false);
-
-    // Sometimes backend took a little bit of time to receive the data and then [2] Display chart won't work properly.
-    // So that method was called again if there is some issue again after 1000ms and within that time the button status
-    // is change to disabled.
-    setTimeout(() => {
-      this.displayChart(this.equipmentService.noOfElements, this.last, false);
-      this.previousDisabled = false;
-      this.chartRender();
-
-      if (this.lastRowId <= 50) {
-        this.previousDisabled = true;
-        this.equipmentService.last = 50;
-      }
-      if (this.lastRowId < 298) {
-        this.nextDisabled = false;
-      }
-      this.buttonColor();
-    },  1500);
-
-    // Change the button status according to current row id of the last object.
-
-
-  }
-
-  // Change the button color according to its disabled status
-  buttonColor(): void {
-    if (this.previousDisabled) {
-      this.previousColor = 'grey';
-    } else {
-      this.previousColor = 'dodgerblue';
-    }
-    if (this.nextDisabled) {
-      this.nextColor = 'grey';
-    } else {
-      this.nextColor = 'dodgerblue';
-    }
-  }
-
 
 }
